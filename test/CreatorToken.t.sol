@@ -35,8 +35,8 @@ abstract contract CreatorTokenTest is Events, Helpers {
         assembly {
             extcodecopy(sload(validator.slot), add(validatorDeployedBytecode, 0x20), 0x00, validatorCodeSize)
         }
-        vm.etch(0x721C002B0059009a671D00aD1700c9748146cd1B, validatorDeployedBytecode);
-        validator = CreatorTokenTransferValidator(0x721C002B0059009a671D00aD1700c9748146cd1B);
+        vm.etch(0x721C008fdff27BF06E7E123956E2Fe03B63342e3, validatorDeployedBytecode);
+        validator = CreatorTokenTransferValidator(0x721C008fdff27BF06E7E123956E2Fe03B63342e3);
     }
 
     function _verifyEOA(uint160 toKey) internal returns (address to) {
