@@ -37,36 +37,8 @@ contract LoomValidator is CreatorTokenTransferValidator {
     using EnumerableSet for EnumerableSet.AddressSet;
     uint16 private constant DEFAULT_TOKEN_TYPE = 0;
 
-    /*************************************************************************/
-    /*                             CUSTOM ERRORS                             */
-    /*************************************************************************/
-
-    /// @dev Thrown when attempting to call a function that requires owner or default admin role for a collection that the caller does not have.
-    error LoomValidator__CallerMustHaveElevatedPermissionsForSpecifiedNFT();
-
-    /// @dev Thrown when attempting to add a zero address to the to whitelist.
-    error LoomValidator__CannotAddZeroAddressToToWhitelist();
-
-    /*************************************************************************/
-    /*                                EVENTS                                 */
-    /*************************************************************************/
-
-    /// @dev Emitted when an address is added to the to whitelist for a collection.
-    event AddedToWhitelistForCollection(address indexed collection, address indexed toAddress);
-
-    /// @dev Emitted when an address is removed from the to whitelist for a collection.
-    event RemovedFromToWhitelistForCollection(address indexed collection, address indexed toAddress);
-
-    /*************************************************************************/
-    /*                                STORAGE                                */
-    /*************************************************************************/
-
     /// @dev Mapping of collection addresses to their to whitelist settings
     mapping(uint120 => List) internal targetWhitelist;
-
-    /*************************************************************************/
-    /*                             CONSTRUCTOR                               */
-    /*************************************************************************/
 
     constructor(
         address defaultOwner,
