@@ -37,8 +37,8 @@ contract LoomValidator is CreatorTokenTransferValidator {
     using EnumerableSet for EnumerableSet.AddressSet;
     uint16 private constant DEFAULT_TOKEN_TYPE = 0;
 
-    /// @dev Mapping of collection addresses to their to whitelist settings
-    mapping(uint120 => List) internal targetWhitelist;
+    /// @dev Mapping of list ids to recipient allowlists.
+    mapping(uint120 => List) internal recipientAllowlist;
 
     constructor(
         address defaultOwner,
@@ -55,7 +55,7 @@ contract LoomValidator is CreatorTokenTransferValidator {
     ) {}
 
     /**
-     * @notice Adds one or more accounts to a targetWhitelist.
+     * @notice Adds one or more accounts to a recipientAllowlist.
      *
      * @dev Throws when the caller does not own the specified list.
      * @dev Throws when the accounts array is empty.
@@ -67,8 +67,8 @@ contract LoomValidator is CreatorTokenTransferValidator {
      * @param id       The id of the list.
      * @param accounts The addresses of the accounts to add.
      */
-    function addAccountsToTargetWhitelist(uint120 id, address[] calldata accounts) external {
-        _addAccountsToList(targetWhitelist[id], LIST_TYPE_TARGET_WHITELIST, id, accounts);
+    function addAccountsToRecipientAllowlist(uint120 id, address[] calldata accounts) external {
+        _addAccountsToList(recipientAllowlist[id], LIST_TYPE_TARGET_WHITELIST, id, accounts);
     }
 
         /**
@@ -84,11 +84,11 @@ contract LoomValidator is CreatorTokenTransferValidator {
      * @param id       The id of the list.
      * @param accounts The addresses of the accounts to remove.
      */
-    function removeAccountsToTargetWhitelist(
+    function removeAccountsToRecipientAllowlist(
         uint120 id,
         address[] calldata accounts
     ) external {
-        _removeAccountsFromList(targetWhitelist[id], LIST_TYPE_TARGET_WHITELIST, id, accounts);
+        _removeAccountsFromList(recipientAllowlist[id], LIST_TYPE_TARGET_WHITELIST, id, accounts);
     }
 
     /**
@@ -96,8 +96,8 @@ contract LoomValidator is CreatorTokenTransferValidator {
      * @param  id The id of the list.
      * @return An array of whitelisted accounts.
      */
-    function getTargetWhitelistedAccounts(uint120 id) public view returns (address[] memory) {
-        return targetWhitelist[id].enumerableAccounts.values();
+    function getRecipientAllowlistedAccounts(uint120 id) public view returns (address[] memory) {
+        return recipientAllowlist[id].enumerableAccounts.values();
     }
 
     /**
@@ -106,8 +106,8 @@ contract LoomValidator is CreatorTokenTransferValidator {
      * @param account  The address of the account to check.
      * @return         True if the account is whitelisted in the specified list, false otherwise.
      */
-    function isAccountTargetWhitelisted(uint120 id, address account) public view returns (bool) {
-        return targetWhitelist[id].nonEnumerableAccounts[account];
+    function isAccountRecipientAllowlisted(uint120 id, address account) public view returns (bool) {
+        return recipientAllowlist[id].nonEnumerableAccounts[account];
     }
 
     /*************************************************************************/
@@ -163,9 +163,9 @@ contract LoomValidator is CreatorTokenTransferValidator {
 
         CollectionSecurityPolicyV3 storage collectionSecurityPolicy = collectionSecurityPolicies[collection];
         uint120 listId = collectionSecurityPolicy.listId;
-        List storage targetWhitelist = targetWhitelist[listId];
-        // If the 'to' address is on the toWhitelist for this collection, bypass validation
-        if (targetWhitelist.nonEnumerableAccounts[to]) {
+        List storage recipientAllowlist = recipientAllowlist[listId];
+        // If the 'to' address is on the recipientAllowlist for this collection, bypass validation
+        if (recipientAllowlist.nonEnumerableAccounts[to]) {
             return (SELECTOR_NO_ERROR, DEFAULT_TOKEN_TYPE);
         }
 

@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "./TransferValidator.t.sol";
+import "./TransferValidatorERC1155.t.sol";
 import {LoomValidator, LIST_TYPE_TARGET_WHITELIST} from "../src/utils/LoomValidator.sol";
 
-contract LoomValidatorTest is TransferValidatorTest {
+contract LoomValidatorTest is TransferValidatorTestERC1155 {
     LoomValidator public loomValidator;
 
     function setUp() public virtual override {
@@ -25,7 +25,7 @@ contract LoomValidatorTest is TransferValidatorTest {
     /*************************************************************************/
     /*                   TARGET WHITELIST MANAGEMENT TESTS                   */
     /*************************************************************************/
-    function testAddAccountsToTargetWhitelist(address listOwner, uint256 numAccountsToWhitelist, address[10] memory accounts) public {
+    function testAddAccountsToRecipientAllowlist(address listOwner, uint256 numAccountsToWhitelist, address[10] memory accounts) public {
         _sanitizeAddress(listOwner);
         numAccountsToWhitelist = bound(numAccountsToWhitelist, 1, 10);
 
@@ -55,21 +55,21 @@ contract LoomValidatorTest is TransferValidatorTest {
         }
 
         vm.prank(listOwner);
-        loomValidator.addAccountsToTargetWhitelist(listId, accountsToWhitelist);
+        loomValidator.addAccountsToRecipientAllowlist(listId, accountsToWhitelist);
 
         for (uint256 i = 0; i < numAccountsToWhitelist; i++) {
-            // assertTrue(loomValidator.isAccountTargetWhitelisted(listId, accountsToWhitelist[i]));
+          assertTrue(loomValidator.isAccountRecipientAllowlisted(listId, accountsToWhitelist[i]));
         }
 
-        // address[] memory whitelistedAccounts = loomValidator.getTargetWhitelistedAccounts(listId);
-        // assertEq(whitelistedAccounts.length, expectedNumAccountsWhitelisted);
+        address[] memory whitelistedAccounts = loomValidator.getRecipientAllowlistedAccounts(listId);
+        assertEq(whitelistedAccounts.length, expectedNumAccountsWhitelisted);
 
         for(uint256 i = 0; i < expectedNumAccountsWhitelisted; i++) {
-            // assertTrue(loomValidator.isAccountTargetWhitelisted(listId, accountsToWhitelist[i]));
+          assertTrue(loomValidator.isAccountRecipientAllowlisted(listId, accountsToWhitelist[i]));
         }
     }
 
-    function testRemoveAccountsFromTargetWhitelist(address listOwner, uint256 numAccountsToRemove, address[10] memory accounts) public {
+    function testRemoveAccountsFromRecipientAllowlist(address listOwner, uint256 numAccountsToRemove, address[10] memory accounts) public {
         _sanitizeAddress(listOwner);
         numAccountsToRemove = bound(numAccountsToRemove, 1, 10);
 
@@ -116,5 +116,4 @@ contract LoomValidatorTest is TransferValidatorTest {
         address[] memory whitelistedAccounts = validator.getWhitelistedAccounts(listId);
         assertEq(whitelistedAccounts.length, numPreWhitelistedAccounts - expectedNumAccountsRemoved);
     }
-
 }
