@@ -1748,7 +1748,7 @@ contract CreatorTokenTransferValidator is IEOARegistry, ITransferValidator, ERC1
         address from, 
         address to,
         uint256 tokenId
-    ) internal view returns (bytes4,uint16) {
+    ) internal view virtual returns (bytes4,uint16) {
         if (caller == address(this)) { 
             // If the caller is self (Permit-C Processor) it means we have already applied operator validation in the 
             // _beforeTransferFrom callback.  In this case, the security policy was already applied and the operator
